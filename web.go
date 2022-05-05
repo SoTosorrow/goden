@@ -72,13 +72,12 @@ func (web *Web) Use(strs string, handlerFunc HandlerFunc) {
 // 	}
 // }
 
-func (web *Web) AddGetRoute(routeUrl string, routeFunc HandlerFunc) {
-	web.Router.addRoute("GET", routeUrl, routeFunc)
+func (web *Web) AddGetRoute(routeUrl string, routeFunc HandlerFunc) *RouterBranch{
+	return web.Router.addRoute("GET", routeUrl, routeFunc)
 }
-func (web *Web) AddPostRoute(routeUrl string, routeFunc HandlerFunc) {
-	web.Router.addRoute("POST", routeUrl, routeFunc)
+func (web *Web) AddPostRoute(routeUrl string, routeFunc HandlerFunc) *RouterBranch{
+	return web.Router.addRoute("POST", routeUrl, routeFunc)
 }
-
 
 func (web *Web) Static(requestPath string, originPath string) {
 	handlerFunc := web.returnFileServerFunc(requestPath,http.Dir(originPath))
@@ -92,13 +91,14 @@ func (web *Web) returnFileServerFunc(requestPath string, fs http.FileSystem) Han
 		file := c.RouteParams["filepath"]
 		fmt.Println(file)
 		// Check if file exists and/or if we have permission to access it
-		if _, err := fs.Open(file); err != nil {
+		f,err := fs.Open(file)
+		if err != nil {
 			c.SetStatus(http.StatusNotFound)
 			return
 		}
 
+		f.Close()
 		fileServer.ServeHTTP(c.Response, c.Request)
-//!!! fs.close()
 	}
 
 }

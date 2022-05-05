@@ -40,12 +40,12 @@ func (n *trieNode) matchFuzzyChild(value string) *trieNode {
 }
 
 //!!! 严格插入一串完全前缀 (新的更长的前缀insert时，会导致一个分支出现多个fullValue，即多个终点)
-func (n *trieNode) insertStrict(values []string) {
+func (n *trieNode) insertStrict(values []string) *trieNode{
 	// 若前缀串长度 与 当前节点高度 相同， 则前缀串插入完毕
 	if n.currentHeight == len(values) {
 		// 拼接前缀之和
 		n.fullValue = joinRouteStrings(values)
-		return
+		return n
 	}
 	// 下一个前缀
 	value := values[n.currentHeight]
@@ -60,7 +60,7 @@ func (n *trieNode) insertStrict(values []string) {
 		}
 		n.children = append(n.children,child)
 	}
-	child.insertStrict(values)
+	return child.insertStrict(values)
 }
 
 //

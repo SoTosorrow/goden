@@ -16,14 +16,20 @@ func newRouter() *Router {
 	}
 }
 
-func (router *Router) addRoute(method string, routeUrl string, routeFunc HandlerFunc) {
+func (router *Router) addRoute(method string, routeUrl string, routeFunc HandlerFunc) *RouterBranch{
 	log.Printf("[Router]: RouteAdd '%s - %s'", method, routeUrl)
 	key := method + "-" + routeUrl
 	
 	values := string2strs(routeUrl)
 
-	router.root.insertStrict(values)
+	node := router.root.insertStrict(values)
 	router.routes[key] = routeFunc
+
+	return &RouterBranch{
+		Router: router, 		
+		branchUrl: routeUrl,
+		root: node,
+	}
 }
 
 func (router *Router) getRoute(method string, routeUrl string) ([]*trieNode,map[string]string) {
@@ -38,3 +44,37 @@ func (router *Router) getRoute(method string, routeUrl string) ([]*trieNode,map[
 	return nil,nil
 }
 
+//TODO node2 = web.addRoute("url1",...) node2.addRoute("url2",...)
+type RouterBranch struct {
+	Router 		*Router
+	branchUrl 	string
+	root 		*trieNode
+}
+
+func (branch *RouterBranch) AddGetRoute(routeUrl string, routeFunc HandlerFunc)  *RouterBranch{
+	return branch.addRoute("GET", routeUrl, routeFunc)
+}
+func (branch *RouterBranch) AddPostRoute(routeUrl string, routeFunc HandlerFunc)  *RouterBranch{
+	return branch.addRoute("POST", routeUrl, routeFunc)
+}
+
+func (branch *RouterBranch) addRoute(method string, routeUrl string, routeFunc HandlerFunc) *RouterBranch{
+	totalRoute := branch.branchUrl + routeUrl
+	log.Printf("[Router]: RouteAdd '%s - %s'", method, totalRoute)
+	key := method + "-" + totalRoute
+	
+	values := string2strs(totalRoute)
+
+	node := branch.root.insertStrict(values)
+	branch.Router.routes[key] = routeFunc
+
+	return &RouterBranch{
+		Router: branch.Router, 		
+		branchUrl: totalRoute,
+		root: node,
+	}
+}
+
+func (branch *RouterBranch) Use(handlerFunc HandlerFunc) {
+	branch.root.handlerFuncs = append(branch.root.handlerFuncs, handlerFunc)
+}
