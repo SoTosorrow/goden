@@ -59,7 +59,12 @@ func (branch *RouterBranch) AddPostRoute(routeUrl string, routeFunc HandlerFunc)
 }
 
 func (branch *RouterBranch) addRoute(method string, routeUrl string, routeFunc HandlerFunc) *RouterBranch{
-	totalRoute := branch.branchUrl + routeUrl
+	var totalRoute string
+	if branch.branchUrl == "/" {
+		totalRoute = branch.branchUrl + routeUrl
+	} else {
+		totalRoute = branch.branchUrl + "/" + routeUrl
+	}
 	log.Printf("[Router]: RouteAdd '%s - %s'", method, totalRoute)
 	key := method + "-" + totalRoute
 	
