@@ -17,6 +17,12 @@ func newRouter() *Router {
 }
 
 func (router *Router) addRoute(method string, routeUrl string, routeFunc HandlerFunc) *RouterBranch{
+	if routeUrl == "" {
+		routeUrl = "/"
+	}
+	if string(routeUrl[0]) != "/" {
+		routeUrl = "/" + routeUrl
+	}
 	log.Printf("[Router]: RouteAdd '%s - %s'", method, routeUrl)
 	key := method + "-" + routeUrl
 	
@@ -60,6 +66,10 @@ func (branch *RouterBranch) AddPostRoute(routeUrl string, routeFunc HandlerFunc)
 
 func (branch *RouterBranch) addRoute(method string, routeUrl string, routeFunc HandlerFunc) *RouterBranch{
 	var totalRoute string
+	// "/test1/test2" -> "test1/test2"
+	if string(routeUrl[0]) == "/" {
+		routeUrl = routeUrl[1:]
+	}
 	if branch.branchUrl == "/" {
 		totalRoute = branch.branchUrl + routeUrl
 	} else {
