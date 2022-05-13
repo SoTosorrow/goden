@@ -11,9 +11,10 @@ import (
 
 var (
 	// Lshortfile show filename & codeline
+	// TODO frendly color show
 	errorLog = log.New(os.Stdout, "\033[31m[error]\033[0m ", log.LstdFlags|log.Lshortfile)
 	warnLog  = log.New(os.Stdout, "\033[33m[warn ]\033[0m ", log.LstdFlags|log.Lshortfile)
-	successLog = log.New(os.Stdout, "\033[36m[info ]\033[0m ", log.LstdFlags|log.Lshortfile)
+	successLog = log.New(os.Stdout, "\033[36m[succs]\033[0m ", log.LstdFlags|log.Lshortfile)
 	infoLog  = log.New(os.Stdout, "\033[34m[info ]\033[0m ", log.LstdFlags|log.Lshortfile)
 	loggers  = []*log.Logger{errorLog, infoLog,warnLog,successLog}
 	mutex sync.Mutex
@@ -21,6 +22,7 @@ var (
 
 var (
 	// ?Fatal
+	// ?panic
 	Error = errorLog.Println
 	Info = infoLog.Println
 	Warn = warnLog.Println
